@@ -921,10 +921,10 @@
             const code = document.getElementById('redeem-code').value;
             if (code === "VIP888") {
                 if (currentUser) {
-                    currentUser.money += 1000000000000;
+                    currentUser.money += 100000;
                     updateMoneyDisplay();
                     saveUserData();
-                    showFloatingMessage("兑换成功！获得1,000,000,000金币！");
+                    showFloatingMessage("兑换成功！获得10,000金币！");
                     toggleRedeem();
                 } else {
                     alert("请先登录！");
