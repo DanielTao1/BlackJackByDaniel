@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>💎豪华21点💵-手机版</title>
+    <style>
+        /* 全局样式 */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+            margin: 0;
+            padding: 10px;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            margin: 10px 0;
+        }
+
+        /* 登录框样式 */
+        .auth-box {
+            position: fixed;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #2a2a2a;
+            width: 90%;
+            max-width: 300px;
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 1000;
+        }
+
+        /* 游戏区域样式 */
+        .game-area {
+            width: 100%;
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+
+        .bet-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin: 10px 0;
+        }
+
+        .bet-buttons button {
+            padding: 12px 8px;
+            font-size: 14px;
+            background: #4CAF50;
+            border: none;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        input {
+            padding: 10px;
+            margin: 5px;
+            width: 100%;
+            box-sizing: border-box;
+            background: #333;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 8px;
+        }
+
+        /* 卡牌样式 */
+        .cards {
+            min-height: 80px;
+            padding: 10px;
+            background: #333;
+            border-radius: 8px;
+            margin: 8px 0;
+        }
+
+        .card-symbol {
+            margin: 3px;
+            padding: 6px;
+            background: #444;
+            border-radius: 5px;
+            display: inline-block;
+            font-size: 14px;
+        }
+
+        /* 货币显示 */
+        .money {
+            color: #FFD700;
+            font-size: 20px;
+            margin: 15px 0;
+        }
+
+        /* 等级系统 */
+        .level-info {
+            color: #4CAF50;
+            font-size: 16px;
+            margin: 10px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .progress-bar {
+            width: 80%;
+            height: 8px;
+            background: #333;
+            border-radius: 5px;
+            margin: 5px auto;
+        }
+
+        .progress {
+            height: 100%;
+            background: #4CAF50;
+            border-radius: 5px;
+            transition: width 0.3s;
+        }
+
+        /* 钻石样式 */
+        .diamond-info {
+            color: #00BFFF;
+            font-size: 16px;
+        }
+
+        /* 游戏控制按钮 */
+        #game-controls button {
+            padding: 15px 20px;
+            margin: 5px;
+            font-size: 16px;
+            flex: 1;
+            min-width: 45%;
+            border-radius: 8px;
+        }
+
+        .double-button {
+            background: #FF9800 !important;
+        }
+
+        /* 通用按钮样式 */
+        button {
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* 标题样式 */
+        h1 { font-size: 24px; margin: 10px 0; }
+        h2 { font-size: 20px; }
+        h3 { font-size: 18px; margin: 8px 0; }
+
+        /* 侧边注选项 */
+        .sidebet-options {
+            margin: 10px 0;
+            padding: 10px;
+            background: #333;
+            border-radius: 8px;
+        }
+
+        .sidebet-options label {
+            display: block;
+            margin: 8px 0;
+            font-size: 14px;
+        }
+
+        .sidebet-options input[type="checkbox"] {
+            width: auto;
+            margin-right: 5px;
+        }
+
+        /* 响应式设计 */
+        @media (min-width: 768px) {
+            .bet-buttons { grid-template-columns: repeat(3, 1fr); }
+            #game-controls button { min-width: 30%; }
+        }
+
+        /* 浮动动画 */
+        @keyframes floatUp {
+            0% { top: 20%; opacity: 1; }
+            100% { top: 10%; opacity: 0; }
+        }
+        
+        /* 商城样式 */
+        #shop-button {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 999;
+            background: rgba(0,191,255,0.8);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            line-height: 40px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .shop-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(42,42,42,0.95);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 1000;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .shop-content {
+            text-align: center;
+        }
+
+        .exchange-item {
+            margin: 15px 0;
+            padding: 10px;
+            background: #333;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .exchange-item button {
+            padding: 8px 15px;
+            background: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .close-shop {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #FF5722;
+            border-radius: 8px;
+            width: 100%;
+        }
+
+        /* 新增功能按钮样式 */
+        .function-button {
+            position: fixed;
+            top: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 999;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            line-height: 40px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        #ad-button { 
+            right: 70px;
+            background: rgba(255,87,34,0.8);
+        }
+
+        #redeem-button {
+            right: 120px;
+            background: rgba(76,175,80,0.8);
+        }
+
+        /* 弹窗样式 */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(42,42,42,0.95);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 1000;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .popup-content {
+            text-align: center;
+        }
+
+        .popup input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: #333;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 8px;
+        }
+
+        .popup button {
+            padding: 12px 24px;
+            margin: 10px 5px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .ad-button { background: #FF5722; color: white; }
+        .redeem-button { background: #4CAF50; color: white; }
+        .close-button {
+            background: #666;
+            color: white;
+            margin-top: 15px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- 功能按钮 -->
+    <div id="shop-button" class="function-button" onclick="toggleShop()" title="钻石商城">💎</div>
+    <div id="ad-button" class="function-button" onclick="toggleAd()" title="观看广告">📺</div>
+    <div id="redeem-button" class="function-button" onclick="toggleRedeem()" title="兑换码">🎫</div>
+
+    <!-- 广告弹窗 -->
+    <div id="ad-popup" class="popup">
+        <div class="popup-content">
+            <h3>🎥 观看广告获得奖励</h3>
+            <p>观看完整视频可获得：</p>
+            <p style="color: #FFD700; font-size: 24px;">+10,000金币</p>
+            <button class="ad-button" onclick="watchAd()">立即观看</button>
+            <button onclick="toggleAd()" class="close-button">关闭</button>
+            <div id="ad-status" style="margin-top:10px;"></div>
+        </div>
+    </div>
+
+    <!-- 兑换码弹窗 -->
+    <div id="redeem-popup" class="popup">
+        <div class="popup-content">
+            <h3>🎁 兑换码</h3>
+            <input type="text" id="redeem-code" placeholder="输入兑换码">
+            <button class="redeem-button" onclick="redeemCode()">兑换</button>
+            <button onclick="toggleRedeem()" class="close-button">关闭</button>
+        </div>
+    </div>
+
+    <!-- 商城弹窗 -->
+    <div id="shop-popup" class="shop-popup">
+        <div class="shop-content">
+            <h3>💎 钻石商城 💰</h3>
+            <div class="exchange-item">
+                <div>500钻石 → 500,000金币</div>
+                <button onclick="exchange(500, 500000)">兑换</button>
+            </div>
+            <div class="exchange-item">
+                <div>1000钻石 → 1,000,000金币</div>
+                <button onclick="exchange(1000, 1000000)">兑换</button>
+            </div>
+            <div class="exchange-item">
+                <div>2000钻石 → 2,500,000金币</div>
+                <button onclick="exchange(2000, 2500000)">兑换</button>
+            </div>
+            <div class="exchange-item">
+                <div>5000钻石 → 6,000,000金币</div>
+                <button onclick="exchange(5000, 6000000)">兑换</button>
+            </div>
+            <div class="exchange-item">
+                <div>10000钻石 → 13,000,000金币</div>
+                <button onclick="exchange(10000, 13000000)">兑换</button>
+            </div>
+            <div class="exchange-item">
+                <div>30000钻石 → 40,000,000金币</div>
+                <button onclick="exchange(30000, 40000000)">兑换</button>
+            </div>
+            <div class="exchange-item">
+                <div>60000钻石 → 85,000,000金币</div>
+                <button onclick="exchange(60000, 85000000)">兑换</button>
+            </div>
+            <div class="exchange-item">
+                <div>100000钻石 → 140,000,000金币</div>
+                <button onclick="exchange(100000, 140000000)">兑换</button>
+            </div>
+            <button onclick="toggleShop()" class="close-shop">关闭</button>
+        </div>
+    </div>
+
+    <!-- 登录框 -->
+    <div class="auth-box" id="auth-box">
+        <h2>用户登录/注册</h2>
+        <input type="text" id="username" placeholder="用户名">
+        <input type="password" id="password" placeholder="密码">
+        <button onclick="login()">登录</button>
+        <button onclick="register()">注册</button>
+    </div>
+
+    <!-- 游戏主界面 -->
+    <div class="container" id="game-container" style="display: none;">
+        <div class="game-area">
+            <h1>💰富豪版21点💎</h1>
+            <div class="level-info">
+                <div>👑等级：<span id="current-level">1</span></div>
+                <div>🛡️经验：<span id="current-exp">0</span></div>
+                <div class="diamond-info">💎钻石：<span id="current-diamonds">0</span></div>
+                <div class="progress-bar" style="width:100%">
+                    <div class="progress" id="level-progress" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="money">
+                当前资金💰：¥<span id="current-money">0</span>
+                <span style="margin-left: 15px; color: #4CAF50">
+                    总下注：¥<span id="current-bet">0</span><br>
+                    <span style="font-size: 12px">(主注 + 侧边注)</span>
+                </span>
+            </div>
+            
+            <!-- 侧边注选项 -->
+            <div class="sidebet-options">
+                <label>
+                    <input type="checkbox" id="flush-check">
+                    同时押同花/顺子 (1:50，主注5%)
+                </label>
+                <label>
+                    <input type="checkbox" id="three-check">
+                    同时押三同数字 (1:100，主注5%)
+                </label>
+            </div>
+
+            <!-- 下注按钮 -->
+            <div class="bet-buttons">
+                <button onclick="placeBet(5000)">押 ¥5,000🪙</button>
+                <button onclick="placeBet(10000)">押 ¥10,000🪙</button>
+                <button onclick="placeBet(50000)">押 ¥50,000🧧</button>
+                <button onclick="placeBet(100000)">押 ¥100,000🧧</button>
+                <button onclick="placeBet(300000)">押 ¥300,000💶</button>
+                <button onclick="placeBet(500000)">押 ¥500,000💶</button>
+                <button onclick="placeBet(1000000)">押 ¥1,000,000💵</button>
+                <button onclick="placeBet(5000000)">押 ¥5,000,000💵</button>
+                <button onclick="placeBet(10000000)">押 ¥10,000,000💎</button>
+                <button onclick="placeBet(100000000)">押 ¥100,000,000💎</button>
+                <button onclick="placeBet(500000000)">押 ¥500,000,000💰</button>
+                <button onclick="placeBet(1000000000)">押 ¥1,000,000,000💰</button>
+                <button onclick="placeBet(5000000000)">押 ¥5,000,000,000💳</button>
+                <button onclick="placeBet(10000000000)">押 ¥10,000,000,000💳</button>
+                <button onclick="placeBet(50000000000)">押 ¥50,000,000,000🔱</button>
+                <button onclick="placeBet(100000000000)">押 ¥100,000,000,000🔱</button>
+            </div>
+
+            <!-- 游戏控制 -->
+            <div id="game-controls" style="display: none;">
+                <div class="cards">
+                    <h3>庄家的牌 (<span id="dealer-score">0</span>)</h3>
+                    <div id="dealer-cards"></div>
+                </div>
+                <div class="cards">
+                    <h3>你的牌 (<span id="player-score">0</span>)</h3>
+                    <div id="player-cards"></div>
+                </div>
+                <button onclick="hit()">要牌</button>
+                <button class="double-button" onclick="doubleDown()">DOUBLE 加倍</button>
+                <button onclick="stand()">停牌</button>
+                <button onclick="resetGame()">重新开始</button>
+                <div id="game-result" style="color: #FF5722; font-size: 24px; margin: 15px;"></div>
+            </div>
+        </div>
+
+        <!-- 排行榜 -->
+        <div class="leaderboard">
+            <h2>🏆 富豪排行榜</h2>
+            <ul id="leaderboard-list"></ul>
+        </div>
+    </div>
+
+    <script>
+        // 系统配置
+        const levelRequirements = [0, 30, 100, 300, 1000, 5000, 20000, 100000,300000,600000,1000000,3000000,6000000,10000000,30000000,60000000,100000000,300000000,600000000,1000000000,3000000000,6000000000,10000000000,20000000000,50000000000,100000000000];
+        const typeNameMap = {
+            flush_straight: '同花/顺子',
+            threeOfAKind: '三同数字'
+        };
+
+        // 游戏数据
+        let users = JSON.parse(localStorage.getItem('blackjackUsers')) || [];
+        let currentUser = null;
+        let deck = [];
+        let dealerHand = [];
+        let playerHand = [];
+        let currentBet = 0;
+        let gameActive = false;
+        let initialCards = [];
+
+        // 侧边注配置
+        let sideBets = {
+            flush_straight: {
+                amount: 0,
+                odds: 50,
+                check: function(cards) {
+                    return checkFlush(cards) || checkStraight(cards);
+                }
+            },
+            threeOfAKind: {
+                amount: 0,
+                odds: 100,
+                check: checkThreeOfAKind
+            }
+        };
+
+        // 用户管理
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const user = users.find(u => u.username === username);
+            if (user && user.password === password) {
+                currentUser = user;
+                startGameSession();
+            } else {
+                alert('用户名或密码错误');
+            }
+        }
+
+        function register() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            if (users.some(u => u.username === username)) {
+                alert('用户名已存在');
+                return;
+            }
+            const newUser = {
+                username,
+                password,
+                money: 100000,
+                diamonds: 0,
+                adLastUsed: 0,
+                level: 1,
+                exp: 0,
+                totalExp: 0,
+                claimedLevels: [1]
+            };
+            users.push(newUser);
+            localStorage.setItem('blackjackUsers', JSON.stringify(users));
+            currentUser = newUser;
+            startGameSession();
+        }
+
+        // 游戏核心逻辑
+        function initializeDeck() {
+            deck = [];
+            const suits = ['♠', '♣', '♥', '♦'];
+            const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+            for (let suit of suits) {
+                for (let value of values) {
+                    deck.push({ 
+                        suit, 
+                        value, 
+                        color: (suit === '♥' || suit === '♦') ? 'red' : 'white' 
+                    });
+                }
+            }
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+        }
+
+        function calculateScore(hand) {
+            let score = 0;
+            let aceCount = 0;
+            for (let card of hand) {
+                if (card.value === 'A') {
+                    aceCount++;
+                    score += 11;
+                } else if (['J', 'Q', 'K'].includes(card.value)) {
+                    score += 10;
+                } else {
+                    score += parseInt(card.value);
+                }
+            }
+            while (score > 21 && aceCount > 0) {
+                score -= 10;
+                aceCount--;
+            }
+            return score;
+        }
+
+        function dealCard(hand) {
+            if (deck.length < 10) initializeDeck();
+            return hand.push(deck.pop());
+        }
+
+        function placeBet(amount) {
+            if (!currentUser) return;
+            if (gameActive) {
+                alert('请先结束当前游戏再下注！');
+                return;
+            }
+            
+            const flushBet = document.getElementById('flush-check').checked;
+            const threeBet = document.getElementById('three-check').checked;
+            
+            let totalBet = amount;
+            if (flushBet) totalBet += amount * 0.05;
+            if (threeBet) totalBet += amount * 0.05;
+            
+            if (currentUser.money < totalBet) {
+                alert('资金不足！');
+                return;
+            }
+            
+            currentUser.money -= totalBet;
+            currentBet = amount;
+            sideBets.flush_straight.amount = flushBet ? amount * 0.05 : 0;
+            sideBets.threeOfAKind.amount = threeBet ? amount * 0.05 : 0;
+            
+            updateBetDisplay();
+            initializeDeck();
+            dealerHand = [];
+            playerHand = [];
+            dealCard(dealerHand);
+            dealCard(playerHand);
+            dealCard(playerHand);
+            initialCards = [...playerHand, dealerHand[0]];
+            gameActive = true;
+            document.getElementById('game-controls').style.display = 'block';
+            updateDisplay();
+        }
+
+        function hit() {
+            if (!gameActive) return;
+            dealCard(playerHand);
+            const playerScore = calculateScore(playerHand);
+            updateDisplay();
+            if (playerScore > 21) {
+                endGame('爆牌！庄家获胜');
+            }
+        }
+
+        function stand() {
+            if (!gameActive) return;
+            while (calculateScore(dealerHand) < 17) {
+                dealCard(dealerHand);
+            }
+            const dealerScore = calculateScore(dealerHand);
+            const playerScore = calculateScore(playerHand);
+            
+            let result = '';
+            if (playerScore > 21) {
+                result = '玩家爆牌，庄家赢！';
+            } else if (dealerScore > 21) {
+                result = '庄家爆牌，玩家赢！';
+                currentUser.money += currentBet * 2;
+            } else if (playerScore > dealerScore) {
+                result = '玩家赢！';
+                currentUser.money += currentBet * 2;
+            } else if (playerScore === dealerScore) {
+                result = '平局！';
+                currentUser.money += currentBet;
+            } else {
+                result = '庄家赢！';
+            }
+            endGame(result);
+        }
+
+        function endGame(message) {
+            gameActive = false;
+            checkSideBets();
+            updateDisplay();
+            
+            if (message.includes('赢')) {
+                const winAmount = currentBet + Object.values(sideBets)
+                    .reduce((total, bet) => total + (bet.amount * bet.odds), 0);
+                const earnedExp = Math.floor(winAmount / 1000);
+                addExperience(earnedExp);
+            }
+            
+            document.getElementById('game-result').textContent = message;
+            updateMoneyDisplay();
+            updateLeaderboard();
+            saveUserData();
+        }
+
+        function checkSideBets() {
+            const checkCards = initialCards;
+            for (let type in sideBets) {
+                const bet = sideBets[type];
+                if (bet.amount > 0 && bet.check(checkCards)) {
+                    const winnings = bet.amount * bet.odds;
+                    currentUser.money += winnings + bet.amount;
+                    alert(`${typeNameMap[type]} 中奖！\n下注金额：¥${bet.amount.toLocaleString()}\n获得奖金：¥${winnings.toLocaleString()}\n总返还：¥${(winnings + bet.amount).toLocaleString()}`);
+                }
+                bet.amount = 0;
+            }
+            updateBetDisplay();
+        }
+
+        function checkFlush(cards) {
+            return cards.length >= 3 && cards.every(c => c.suit === cards[0].suit);
+        }
+
+        function checkStraight(cards) {
+            if (cards.length < 3) return false;
+            const values = cards.map(c => {
+                switch(c.value) {
+                    case 'A': return 14;
+                    case 'K': return 13;
+                    case 'Q': return 12;
+                    case 'J': return 11;
+                    default: return parseInt(c.value);
+                }
+            }).sort((a, b) => a - b);
+            if (values.includes(14) && values.includes(2) && values.includes(3)) return true;
+            return (values[2] - values[1] === 1 && values[1] - values[0] === 1);
+        }
+
+        function checkThreeOfAKind(cards) {
+            return cards.length >= 3 && cards.every(c => c.value === cards[0].value);
+        }
+
+        function resetGame() {
+            gameActive = false;
+            currentBet = 0;
+            sideBets.flush_straight.amount = 0;
+            sideBets.threeOfAKind.amount = 0;
+            updateBetDisplay();
+            dealerHand = [];
+            playerHand = [];
+            document.getElementById('game-controls').style.display = 'none';
+            document.getElementById('game-result').textContent = '';
+            updateDisplay();
+        }
+
+        function doubleDown() {
+            if (!gameActive || currentBet === 0) return;
+            if (currentUser.money < currentBet) {
+                alert('资金不足，无法加倍！');
+                return;
+            }
+            currentUser.money -= currentBet;
+            currentBet *= 2;
+            updateBetDisplay();
+            updateMoneyDisplay();
+            dealCard(playerHand);
+            updateDisplay();
+            stand();
+        }
+
+        function updateDisplay() {
+            document.getElementById('dealer-cards').innerHTML = dealerHand.map((card, index) => {
+                if (index === 0 && gameActive) {
+                    return '<span class="card-symbol" style="background: #555">🂠</span>';
+                } else {
+                    return `<span class="card-symbol" style="color: ${card.color}">${card.value}${card.suit}</span>`;
+                }
+            }).join('');
+
+            document.getElementById('player-cards').innerHTML = playerHand.map(card => 
+                `<span class="card-symbol" style="color: ${card.color}">${card.value}${card.suit}</span>`
+            ).join('');
+
+            document.getElementById('dealer-score').textContent = gameActive ? 
+                calculateScore([dealerHand[0]]) : 
+                calculateScore(dealerHand);
+            document.getElementById('player-score').textContent = calculateScore(playerHand);
+        }
+
+        function updateMoneyDisplay() {
+            document.getElementById('current-money').textContent = currentUser.money.toLocaleString('zh-CN');
+        }
+
+        function updateBetDisplay() {
+            const totalBet = currentBet + sideBets.flush_straight.amount + sideBets.threeOfAKind.amount;
+            document.getElementById('current-bet').textContent = totalBet.toLocaleString('zh-CN');
+        }
+
+        function addExperience(amount) {
+            const originalLevel = currentUser.level;
+            currentUser.totalExp += amount;
+            
+            let levelsGained = 0;
+            while (
+                currentUser.level < levelRequirements.length - 1 && 
+                currentUser.totalExp >= levelRequirements[currentUser.level]
+            ) {
+                currentUser.level++;
+                levelsGained++;
+            }
+            
+            if(levelsGained > 0) {
+                let totalDiamonds = 0;
+                for(let i=1; i<=levelsGained; i++) {
+                    const targetLevel = originalLevel + i;
+                    let diamonds = 0;
+                    if(targetLevel === 2) {
+                        diamonds = 50;
+                    } else if(targetLevel >= 3) {
+                        diamonds = 100 * Math.pow(2, targetLevel - 3);
+                    }
+                    totalDiamonds += diamonds;
+                }
+                
+                currentUser.diamonds += totalDiamonds;
+                showFloatingMessage(
+                    `🏆 升级到 Lv.${currentUser.level}\n` +
+                    `获得钻石 💎x${totalDiamonds}`
+                );
+                updateDiamondDisplay();
+            }
+            
+            updateLevelDisplay();
+            saveUserData();
+        }
+
+        function updateDiamondDisplay() {
+            document.getElementById('current-diamonds').textContent = currentUser.diamonds;
+        }
+
+        function updateLevelDisplay() {
+            const levelElement = document.getElementById('current-level');
+            const expElement = document.getElementById('current-exp');
+            
+            if (!levelElement || !expElement) return;
+            
+            levelElement.textContent = currentUser.level;
+            expElement.textContent = currentUser.totalExp;
+            
+            const maxLevel = levelRequirements.length - 1;
+            if(currentUser.level >= maxLevel) {
+                document.getElementById('level-progress').style.width = '100%';
+                return;
+            }
+            
+            const currentReq = levelRequirements[currentUser.level];
+            const prevReq = levelRequirements[currentUser.level - 1] || 0;
+            const progress = ((currentUser.totalExp - prevReq) / (currentReq - prevReq)) * 100;
+            
+            document.getElementById('level-progress').style.width = `${Math.min(100, progress)}%`;
+        }
+
+        function saveUserData() {
+            localStorage.setItem('blackjackUsers', JSON.stringify(users));
+        }
+
+        function updateLeaderboard() {
+            const sorted = [...users].sort((a, b) => b.money - a.money).slice(0, 10);
+            document.getElementById('leaderboard-list').innerHTML = sorted
+                .map((user, index) => `
+                    <li>${index + 1}. ${user.username} - ¥${user.money.toLocaleString('zh-CN')}</li>
+                `).join('');
+        }
+
+        function startGameSession() {
+            document.getElementById('auth-box').style.display = 'none';
+            document.getElementById('game-container').style.display = 'flex';
+            updateMoneyDisplay();
+            updateLevelDisplay();
+            updateDiamondDisplay();
+            initializeDeck();
+            updateLeaderboard();
+        }
+
+        function showFloatingMessage(text) {
+            const msg = document.createElement('div');
+            msg.style.cssText = `
+                position: fixed;
+                top: 20%;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0,200,50,0.9);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 10px;
+                z-index: 9999;
+                animation: floatUp 1.5s ease-out;
+                text-align: center;
+                white-space: pre-line;
+            `;
+            msg.innerHTML = text;
+            document.body.appendChild(msg);
+            setTimeout(() => msg.remove(), 2500);
+        }
+
+        // 新增功能
+        function toggleShop() {
+            const shop = document.getElementById('shop-popup');
+            shop.style.display = shop.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function toggleAd() {
+            const popup = document.getElementById('ad-popup');
+            popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function toggleRedeem() {
+            const popup = document.getElementById('redeem-popup');
+            popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
+        }
+
+        async function watchAd() {
+            try {
+                document.getElementById('ad-status').innerHTML = "⏳ 广告加载中...";
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                document.getElementById('ad-status').innerHTML = "▶️ 正在播放广告...";
+                await new Promise(resolve => setTimeout(resolve, 10000));
+                currentUser.money += 10000;
+                updateMoneyDisplay();
+                saveUserData();
+                document.getElementById('ad-status').innerHTML = "✅ 获得10,000金币！";
+            } finally {
+                setTimeout(() => {
+                    toggleAd();
+                    document.getElementById('ad-status').innerHTML = "";
+                }, 3000);
+            }
+        }
+
+        function redeemCode() {
+            const code = document.getElementById('redeem-code').value;
+            if (code === "VIP888") {
+                if (currentUser) {
+                    currentUser.money += 1000000000000;
+                    updateMoneyDisplay();
+                    saveUserData();
+                    showFloatingMessage("兑换成功！获得1,000,000,000金币！");
+                    toggleRedeem();
+                } else {
+                    alert("请先登录！");
+                }
+            } else {
+                alert("无效的兑换码！");
+            }
+        }
+
+        function exchange(requiredDiamonds, getCoins) {
+            if (!currentUser) return alert("请先登录！");
+            if (currentUser.diamonds >= requiredDiamonds) {
+                currentUser.diamonds -= requiredDiamonds;
+                currentUser.money += getCoins;
+                updateMoneyDisplay();
+                updateDiamondDisplay();
+                saveUserData();
+                showFloatingMessage(`兑换成功！获得 ${getCoins.toLocaleString()}金币`);
+                toggleShop();
+            } else {
+                alert(`钻石不足！需要${requiredDiamonds}钻石`);
+            }
+        }
+
+        // 初始化游戏
+        initializeDeck();
+    </script>
+</body>
+</html>
